@@ -15,16 +15,22 @@
 */
 
 /* Step 5: Now that you have your own card getting added to the DOM, either 
-          follow this link in your browser https://api.github.com/users/<Your github name>/followers 
+          follow this link in your browser https://api.github.com/users/banbanaste/followers 
           , manually find some other users' github handles, or use the list found 
           at the bottom of the page. Get at least 5 different Github usernames and add them as
           Individual strings to the friendsArray below.
           
-          Using that array, iterate over it, requesting data for each user, creating a new card for each
-          user, and adding that card to the DOM.
+          Using that array, iterate over it, requesting data for each user, creating a new card for each user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+const followersArray = [
+  "banbanaste",
+  "tetondan",
+  "dustinmyers",
+  "justsml",
+  "boltsnut24",
+  "bigknell"
+];
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -46,10 +52,69 @@ const followersArray = [];
 
 */
 
+function createCard(dataObject) {
+  const card = document.createElement("div"),
+    img = document.createElement("img"),
+    info = document.createElement("div"),
+    name = document.createElement("h3"),
+    username = document.createElement("p"),
+    location = document.createElement("p"),
+    profile = document.createElement("p"),
+    link = document.createElement("a"),
+    followers = document.createElement("p"),
+    following = document.createElement("p"),
+    bio = document.createElement("p");
+
+  img.src = dataObject.avatar_url;
+  name.textContent = dataObject.name;
+  username.textContent = dataObject.login;
+  location.textContent = `Location: ${dataObject.location}`;
+  profile.textContent = "Profile: ";
+  link.href = dataObject.html_url;
+  link.textContent = dataObject.html_url;
+  followers.textContent = `Followers: ${dataObject.followers}`;
+  following.textContent = `Following: ${dataObject.following}`;
+  bio.textContent = `Bio: ${dataObject.bio}`;
+
+  profile.append(link);
+  info.append(name, username, location, profile, followers, following, bio);
+  card.append(img, info);
+
+  card.classList.add("card");
+  info.classList.add("card-info");
+  name.classList.add("name");
+  username.classList.add("username");
+
+  return card;
+}
+
+/* axios
+  .get("https://api.github.com/users/banbanaste")
+  .then(response => {
+    console.log(response.data);
+    return response.data;
+  })
+  .then(dataObject => {
+    document.querySelector(".cards").append(createCard(dataObject));
+  })
+  .catch(error => console.log(error.message)); */
+
 /* List of LS Instructors Github username's: 
   tetondan
   dustinmyers
   justsml
-  luishrd
+  boltsnut24
   bigknell
 */
+
+followersArray.forEach(follower => {
+  axios
+    .get(`https://api.github.com/users/${follower}`)
+    .then(response => {
+      return response.data;
+    })
+    .then(dataObject => {
+      document.querySelector(".cards").append(createCard(dataObject));
+    })
+    .catch(error => console.log(error.message));
+});
