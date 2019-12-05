@@ -15,7 +15,7 @@
 */
 
 /* Step 5: Now that you have your own card getting added to the DOM, either 
-          follow this link in your browser https://api.github.com/users/banbanaste/followers 
+          follow this link in your browser https://api.github.com/users/<your name>/followers 
           , manually find some other users' github handles, or use the list found 
           at the bottom of the page. Get at least 5 different Github usernames and add them as
           Individual strings to the friendsArray below.
@@ -88,16 +88,38 @@ function createCard(dataObject) {
   return card;
 }
 
-/* axios
+axios
   .get("https://api.github.com/users/banbanaste")
   .then(response => {
     console.log(response.data);
     return response.data;
   })
   .then(dataObject => {
-    document.querySelector(".cards").append(createCard(dataObject));
+    axios
+      .get(dataObject.followers_url)
+      .then(response => {
+        const nameArray = ["banbanaste"];
+        response.data.forEach(person => {
+          nameArray.push(person.login);
+        });
+        return nameArray;
+      })
+      .then(names => {
+        names.forEach(name => {
+          axios
+            .get(`https://api.github.com/users/${name}`)
+            .then(response => {
+              return response.data;
+            })
+            .then(dataObject => {
+              document.querySelector(".cards").append(createCard(dataObject));
+            })
+            .catch(error => console.log(error.message));
+        });
+      });
+    /* document.querySelector(".cards").append(createCard(dataObject)); */
   })
-  .catch(error => console.log(error.message)); */
+  .catch(error => console.log(error.message));
 
 /* List of LS Instructors Github username's: 
   tetondan
@@ -107,7 +129,7 @@ function createCard(dataObject) {
   bigknell
 */
 
-followersArray.forEach(follower => {
+/* names.forEach(name => {
   axios
     .get(`https://api.github.com/users/${follower}`)
     .then(response => {
@@ -117,4 +139,4 @@ followersArray.forEach(follower => {
       document.querySelector(".cards").append(createCard(dataObject));
     })
     .catch(error => console.log(error.message));
-});
+}); */
